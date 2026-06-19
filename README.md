@@ -1,17 +1,17 @@
-# create-next-starter
+# create-prodkit
 
 A CLI to scaffold a production-ready Next.js project with only the tools you actually want — no bloat, no manual setup every time.
 
 ## Usage
 
 ```bash
-npx create-next-starter my-app
+npx create-prodkit my-app
 ```
 
 Or scaffold into the current folder:
 
 ```bash
-npx create-next-starter .
+npx create-prodkit .
 ```
 
 ## What it sets up
@@ -72,13 +72,13 @@ import { cn } from '@/lib/utils'
 Adds `.prettierrc` with sane defaults — single quotes, no semicolons, 100 char print width. Also adds `@trivago/prettier-plugin-sort-imports` which auto-sorts your imports on save:
 
 ```ts
-import { useState } from 'react'
+import { useState } from "react";
 
-import Link from 'next/link'
+import Link from "next/link";
 
-import axios from 'axios'
+import axios from "axios";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 ```
 
 ### Husky
@@ -104,9 +104,9 @@ npm run release:major    # force major bump
 Extends `tsconfig.json` with path aliases so you never write `../../../` again:
 
 ```ts
-import { Button } from '@/components/ui/button'
-import { useAuth } from '@hooks/useAuth'
-import { formatDate } from '@lib/utils'
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@hooks/useAuth";
+import { formatDate } from "@lib/utils";
 ```
 
 ## Requirements

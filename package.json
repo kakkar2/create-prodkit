@@ -1,7 +1,7 @@
 {
   "name": "create-prodkit",
   "version": "1.0.0",
-  "description": "CLI to scaffold a production-ready Next.js project",
+  "description": "CLI for scaffolding production-ready Next.js applications with TypeScript, Tailwind CSS, ESLint, Prettier and modern project tooling.",
   "main": "src/cli.js",
   "bin": {
     "create-prodkit": "./bin/index.js"
@@ -25,28 +25,32 @@
     ]
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^11.0.1",
     "husky": "^9.0.0",
     "lint-staged": "^15.2.0",
-    "release-it": "^17.0.0",
-    "@release-it/conventional-changelog": "^8.0.0"
+    "release-it": "^20.2.0"
   },
   "keywords": [
     "nextjs",
     "cli",
-    "starter",
     "scaffold",
-    "shadcn",
-    "tailwind"
+    "starter-template",
+    "tailwindcss",
+    "typescript",
+    "eslint",
+    "prettier",
+    "nextjs-boilerplate",
+    "developer-tools"
   ],
   "license": "MIT",
   "author": "Lalit Kakkar <lalitkakkar50@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kakkar2/create-next-starter.git"
+    "url": "https://github.com/kakkar2/create-prodkit.git"
   },
-  "homepage": "https://github.com/kakkar2/create-next-starter#readme",
+  "homepage": "https://github.com/kakkar2/create-prodkit#readme",
   "bugs": {
-    "url": "https://github.com/kakkar2/create-next-starter/issues"
+    "url": "https://github.com/kakkar2/create-prodkit/issues"
   },
   "dependencies": {
     "commander": "^12.1.0",
