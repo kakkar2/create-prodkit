@@ -20,16 +20,28 @@ export async function run() {
       console.log(pc.bold(pc.cyan("  >> create-prodkit")));
       console.log(pc.dim("  A production-ready project scaffold\n"));
 
-      const options = await getProjectOptions(projectName); // ← add this
+      try {
+        const options = await getProjectOptions(projectName);
 
-      if (!options.confirmed) {
-        // ← add this
-        console.log(pc.dim("\n  Cancelled.\n"));
-        process.exit(0);
+        if (!options.confirmed) {
+          console.log(pc.dim("\n  Cancelled.\n"));
+          process.exit(0);
+        }
+
+        await createProject(options);
+      } catch (error) {
+        if (err.name === "ExitPromptError") {
+          console.log(pc.dim("\n\n  Cancelled.\n"));
+          process.exit(0);
+        }
+        throw err;
       }
-
-      await createProject(options); // ← pass full options now
     });
+
+  process.on("SIGINT", () => {
+    console.log(pc.dim("\n\n  Cancelled.\n"));
+    process.exit(0);
+  });
 
   program.parse();
 }
