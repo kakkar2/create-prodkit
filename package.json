@@ -1,7 +1,7 @@
 {
   "name": "create-prodkit",
   "version": "1.0.1",
-  "description": "CLI for scaffolding production-ready Next.js applications with TypeScript, Tailwind CSS, ESLint, Prettier and modern project tooling.",
+  "description": "CLI to scaffold production-ready web projects with Husky, release-it, Tailwind utilities and Prettier — zero manual setup.",
   "main": "src/cli.js",
   "bin": {
     "create-prodkit": "bin/index.js"
