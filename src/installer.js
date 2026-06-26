@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs-extra";
 import { logger } from "./utils/logger.js";
 import {
-  setupAbsoluteImports,
   setupPrettier,
   setupReleaseIt,
   setupHusky,
@@ -15,18 +14,20 @@ import { modifyPackageJson } from "./utils/modifyPackageJson.js";
 export async function installFeatures(options) {
   const { targetDir, packageManager, features, huskyHooks } = options;
 
-  // ── 1. Modify package.json before install ─────────────────────
-  // Pass huskyHooks so commitlint deps are added when commit-msg is selected
-  await modifyPackageJson(targetDir, features, packageManager, huskyHooks);
-
-  // ── 2. git init (must happen before husky setup) ──────────────
+  // git init if needed (must be before husky)
   if (features.includes("husky")) {
-    await runStep("Initializing git repo...", async () => {
-      await execa("git", ["init"], { cwd: targetDir });
-    });
+    const gitExists = await fs.pathExists(path.join(targetDir, ".git"));
+    if (!gitExists) {
+      await runStep("Initializing git repo...", async () => {
+        await execa("git", ["init"], { cwd: targetDir });
+      });
+    }
   }
 
-  // ── 3. Single install pass (picks up all deps we just added) ──
+  // Inject deps into package.json
+  await modifyPackageJson(targetDir, features, packageManager, huskyHooks);
+
+  // Install everything in one pass
   await runStep(
     `Installing dependencies with ${packageManager}...`,
     async () => {
@@ -37,30 +38,21 @@ export async function installFeatures(options) {
     },
   );
 
-  // ── 4. Husky setup ────────────────────────────────────────────
   if (features.includes("husky")) {
-    await setupHusky({ targetDir, huskyHooks, packageManager });
+    await setupHusky({ targetDir, huskyHooks });
   }
 
-  // ── 5. release-it config ──────────────────────────────────────
   if (features.includes("release-it")) {
     await setupReleaseIt(targetDir);
   }
 
-  // ── 6. Prettier config ────────────────────────────────────────
-  if (features.includes("eslint")) {
+  if (features.includes("prettier")) {
     await setupPrettier(targetDir);
   }
 
-  // ── 7. Tailwind utils (clsx + tailwind-merge cn helper) ───────
-  if (features.includes("tailwind")) {
+  if (features.includes("cn-util")) {
     await setupTailwindUtils(targetDir);
   }
 
-  // ── 8. Absolute imports ───────────────────────────────────────
-  if (features.includes("absolute-imports")) {
-    await setupAbsoluteImports(targetDir);
-  }
-
-  logger.success("All features installed\n");
+  logger.success("All done! Your project is production-ready.\n");
 }

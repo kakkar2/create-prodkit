@@ -1,103 +1,92 @@
 import inquirer from "inquirer";
 import path from "path";
-import fs from "fs";
+import fs from "fs-extra";
+import { detectPackageManager } from "./utils/detectPackageManager.js";
 
-export async function getProjectOptions(projectNameArg) {
+export async function getInitOptions() {
+  const cwd = process.cwd();
+
+  // guard — must be run inside an existing project
+  const hasPkg = await fs.pathExists(path.join(cwd, "package.json"));
+  if (!hasPkg) {
+    throw new Error(
+      "No package.json found. Run create-prodkit init inside an existing project.",
+    );
+  }
+
+  const detectedPm = await detectPackageManager(cwd);
+
   const answers = await inquirer.prompt([
-    // ── 1. Project name ──────────────────────────────────────────
-    {
-      type: "input",
-      name: "projectName",
-      message: "Project name:",
-      default: projectNameArg || "my-next-app",
-      when: !projectNameArg,
-      validate: (input) => {
-        if (!input.trim()) return "Project name cannot be empty";
-        if (!/^[a-z0-9-_]+$/.test(input))
-          return "Only lowercase letters, numbers, - and _ allowed";
-        return true;
-      },
-    },
-
-    // ── 2. Package manager ───────────────────────────────────────
+    // Package manager
     {
       type: "list",
       name: "packageManager",
-      message: "Package manager:",
+      message: `Package manager: (detected: ${detectedPm})`,
       choices: ["npm", "yarn", "pnpm"],
-      default: "npm",
+      default: detectedPm,
     },
 
-    // ── 3. Feature selection ─────────────────────────────────────
+    // Feature selection
     {
       type: "checkbox",
       name: "features",
-      message: "Select features to include:",
+      message: "What do you want to set up?",
       choices: [
         {
-          name: "Tailwind CSS  (+ clsx & tailwind-merge cn helper)",
-          value: "tailwind",
-          checked: true,
-        },
-        {
-          name: "ESLint + Prettier",
-          value: "eslint",
-          checked: true,
-        },
-        {
-          name: "Husky  (git hooks + pre-commit lint-staged)",
+          name: "Husky  (git hooks)",
           value: "husky",
-          checked: false,
+          checked: true,
         },
         {
           name: "release-it  (changelog + semantic versioning)",
           value: "release-it",
-          checked: false,
+          checked: true,
         },
         {
-          name: "Absolute imports  (@/* → root, @components/*, @lib/*, @hooks/*)",
-          value: "absolute-imports",
+          name: "Prettier + ESLint config",
+          value: "prettier",
           checked: true,
         },
       ],
+      validate: (input) => input.length > 0 || "Select at least one feature",
     },
 
-    // ── 4. Husky hook selection ───────────────────────────────────
+    {
+      name: "cn() utility  (clsx + tailwind-merge for Tailwind projects)",
+      value: "cn-util",
+      checked: false,
+    },
+
     {
       type: "checkbox",
       name: "huskyHooks",
-      message: "Which git hooks do you want?",
+      message: "Which git hooks?",
       choices: [
         {
-          name: "pre-commit  → lint-staged (lint + format changed files)",
+          name: "pre-commit  → lint-staged (lint + format on every commit)",
           value: "pre-commit",
           checked: true,
         },
         {
           name: "commit-msg  → commitlint (enforce conventional commits)",
           value: "commit-msg",
-          checked: false,
+          checked: true,
         },
       ],
       when: (ans) => ans.features.includes("husky"),
+      validate: (input) => input.length > 0 || "Select at least one hook",
     },
 
-    // ── 5. Confirm before doing anything ─────────────────────────
     {
       type: "confirm",
       name: "confirm",
-      message: (ans) => {
-        const name = projectNameArg || ans.projectName;
-        return `Create project "${name}" with selected options?`;
-      },
+      message: "Set up selected tools in this project?",
       default: true,
     },
   ]);
 
-  const projectName = projectNameArg || answers.projectName;
-
   return {
-    projectName,
+    targetDir: cwd,
     packageManager: answers.packageManager,
     features: answers.features,
     huskyHooks: answers.huskyHooks || [],

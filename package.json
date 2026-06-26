@@ -1,7 +1,7 @@
 {
   "name": "create-prodkit",
-  "version": "1.0.1",
-  "description": "CLI to scaffold production-ready web projects with Husky, release-it, Tailwind utilities and Prettier — zero manual setup.",
+  "version": "2.0.1",
+  "description": "CLI to add production-ready DX tooling to any project — Husky, commitlint, release-it and Prettier in one command.",
   "main": "src/cli.js",
   "bin": {
     "create-prodkit": "bin/index.js"
@@ -31,16 +31,17 @@
     "release-it": "^20.2.0"
   },
   "keywords": [
-    "nextjs",
     "cli",
-    "scaffold",
-    "starter-template",
-    "tailwindcss",
-    "typescript",
-    "eslint",
+    "husky",
+    "commitlint",
+    "release-it",
     "prettier",
-    "nextjs-boilerplate",
-    "developer-tools"
+    "lint-staged",
+    "git-hooks",
+    "conventional-commits",
+    "changelog",
+    "developer-tools",
+    "dx"
   ],
   "license": "MIT",
   "author": "Lalit Kakkar <lalitkakkar50@gmail.com>",

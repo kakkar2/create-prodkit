@@ -1,117 +1,96 @@
 # create-prodkit
 
-A CLI to scaffold a production-ready Next.js project with only the tools you actually want — no bloat, no manual setup every time.
+A CLI that adds production-ready DX tooling to any existing project in one command — Husky, commitlint, release-it, and Prettier. Works with Next.js, Vite, Express, or any Node.js project.
 
 ## Usage
 
-```bash
-npx create-prodkit my-app
-```
-
-Or scaffold into the current folder:
+Run inside any existing project:
 
 ```bash
-npx create-prodkit .
+npx create-prodkit init
 ```
+
+It detects your package manager automatically, asks what you want, and sets everything up in one shot.
 
 ## What it sets up
 
-When you run the CLI it asks a few questions then sets everything up in one shot:
-
-**Package manager** — choose between npm, yarn, or pnpm
-
-**Features** — pick what you need:
-
-| Feature           | What it does                                            |
-| ----------------- | ------------------------------------------------------- |
-| Tailwind CSS      | Installed via `create-next-app` + `cn()` utility helper |
-| ESLint + Prettier | Prettier config with import sorting                     |
-| Husky             | Git hooks with lint-staged pre-commit                   |
-| release-it        | Changelog generation + semantic versioning              |
-| Absolute imports  | `@/*`, `@components/*`, `@lib/*`, `@hooks/*`            |
-
-## Project structure
-
-Projects are scaffolded with the `app/` directory at the root (no `src/` wrapper):
-
-```
-my-app/
-├── app/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/     ← added if absolute-imports selected
-├── lib/
-│   └── utils.ts   ← cn() helper (added if Tailwind selected)
-├── hooks/
-├── public/
-├── next.config.ts
-└── package.json
-```
+| Feature           | What it does                                        |
+| ----------------- | --------------------------------------------------- |
+| Husky             | Git hooks via pre-commit and commit-msg             |
+| commitlint        | Enforces conventional commit format on every commit |
+| release-it        | Semantic versioning + auto-generated CHANGELOG.md   |
+| Prettier + ESLint | Formatter config with import sorting                |
+| cn() utility      | clsx + tailwind-merge helper for Tailwind projects  |
 
 ## Feature details
 
-### Tailwind CSS
+### Husky + commitlint
 
-Installed via the `create-next-app` `--tailwind` flag. When selected, two utilities are also added:
+Sets up `.husky/` with your choice of hooks:
 
-- `clsx` — conditional class helper
-- `tailwind-merge` — merges Tailwind classes without conflicts
+- `pre-commit` — runs lint-staged, lints and formats only changed files
+- `commit-msg` — runs commitlint to enforce conventional commit format
 
-A `lib/utils.ts` file is created with a ready-to-use `cn()` helper:
+Conventional commit format looks like:
+
+```bash
+feat: add dark mode toggle
+fix: resolve hydration mismatch on auth page
+chore: update dependencies
+```
+
+When `commit-msg` is selected, `@commitlint/cli` and `@commitlint/config-conventional` are installed and configured automatically.
+
+### release-it
+
+Adds a `.release-it.json` config and release scripts to your `package.json`:
+
+```bash
+npm run release          # auto bump based on commits + generate CHANGELOG.md
+npm run release:patch    # force patch bump (0.0.x)
+npm run release:minor    # force minor bump (0.x.0)
+npm run release:major    # force major bump (x.0.0)
+```
+
+Works best alongside commitlint — conventional commit messages let release-it determine the correct version bump automatically.
+
+### Prettier + ESLint
+
+Adds `.prettierrc` with sane defaults and `@trivago/prettier-plugin-sort-imports` which auto-sorts imports on save:
+
+```ts
+import axios from "axios";
+
+import { Button } from "@/components/ui/button";
+
+import { formatDate } from "./utils";
+```
+
+Also adds:
+
+- `.prettierignore` — excludes `node_modules`, `dist`, `build`, `.next`, `coverage`
+- `format` and `format:check` scripts to `package.json`
+- `prettier` added to your ESLint extends if `.eslintrc.json` is found
+
+### cn() utility
+
+Optional — for Tailwind CSS projects only. Installs `clsx` and `tailwind-merge` and creates a `cn()` helper:
 
 ```ts
 import { cn } from '@/lib/utils'
 
-// Conditional classes, deduplication, conflict resolution — all handled
 <div className={cn('px-4 py-2', isActive && 'bg-blue-500', 'text-sm')} />
 ```
 
-### ESLint + Prettier
+Automatically detects:
 
-Adds `.prettierrc` with sane defaults — single quotes, no semicolons, 100 char print width. Also adds `@trivago/prettier-plugin-sort-imports` which auto-sorts your imports on save:
-
-```ts
-import { useState } from "react";
-
-import Link from "next/link";
-
-import axios from "axios";
-
-import { Button } from "@/components/ui/button";
-```
-
-### Husky
-
-Sets up `.husky/` with your choice of hooks:
-
-- `pre-commit` — runs lint-staged on changed files only before every commit
-- `commit-msg` — runs commitlint to enforce conventional commit format (installs `@commitlint/cli` + `@commitlint/config-conventional` automatically)
-
-### release-it
-
-Replaces the deprecated `standard-version`. Adds `npm run release` scripts and a `.release-it.json` config with conventional changelog:
-
-```bash
-npm run release          # auto bump + generate CHANGELOG.md
-npm run release:patch    # force patch bump
-npm run release:minor    # force minor bump
-npm run release:major    # force major bump
-```
-
-### Absolute imports
-
-Extends `tsconfig.json` with path aliases so you never write `../../../` again:
-
-```ts
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@hooks/useAuth";
-import { formatDate } from "@lib/utils";
-```
+- TypeScript vs JavaScript — generates `utils.ts` or `utils.js`
+- `src/` layout vs root layout — places file in the right `lib/` folder
 
 ## Requirements
 
 - Node.js 18+
+- An existing project with a `package.json`
 - Git installed (required if Husky selected)
 
 ## License
