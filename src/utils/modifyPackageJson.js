@@ -18,10 +18,18 @@ export async function modifyPackageJson(
   if (features.includes("husky")) {
     pkg.devDependencies["husky"] = "^9.0.0";
     pkg.devDependencies["lint-staged"] = "^15.2.0";
-    pkg["lint-staged"] = {
-      "**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-      "**/*.{json,css,md}": ["prettier --write"],
-    };
+    pkg["lint-staged"] = features.includes("prettier")
+      ? {
+          "**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+          "**/*.{json,css,md}": ["prettier --write"],
+        }
+      : {
+          "**/*.{js,jsx,ts,tsx}": ["eslint --fix"],
+        };
+    // pkg["lint-staged"] = {
+    //   "**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+    //   "**/*.{json,css,md}": ["prettier --write"],
+    // };
     pkg.scripts["prepare"] = "husky";
 
     if (huskyHooks.includes("commit-msg")) {
@@ -52,8 +60,9 @@ export async function modifyPackageJson(
   // clsx + tailwind-merge
   if (features.includes("cn-util")) {
     pkg.dependencies = pkg.dependencies || {};
-    pkg.dependencies["clsx"] = "^2.1.0";
-    pkg.dependencies["tailwind-merge"] = "^2.3.0";
+    if (!pkg.dependencies["clsx"]) pkg.dependencies["clsx"] = "^2.1.0";
+    if (!pkg.dependencies["tailwind-merge"])
+      pkg.dependencies["tailwind-merge"] = "^2.3.0";
   }
 
   await fs.writeJson(pkgPath, pkg, { spaces: 2 });

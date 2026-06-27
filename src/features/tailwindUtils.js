@@ -14,6 +14,13 @@ export async function setupTailwindUtils(targetDir) {
       ? path.join(targetDir, "src", "lib")
       : path.join(targetDir, "lib");
 
+    const utilsTs = path.join(libDir, "utils.ts");
+    const utilsJs = path.join(libDir, "utils.js");
+
+    if ((await fs.pathExists(utilsTs)) || (await fs.pathExists(utilsJs))) {
+      return; // already exists — skip silently
+    }
+
     await fs.ensureDir(libDir);
 
     const content = isTs

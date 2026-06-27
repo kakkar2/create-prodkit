@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs-extra";
 import { detectPackageManager } from "./utils/detectPackageManager.js";
 
-export async function getInitOptions() {
+export async function getInitOptions(skipPrompts = false) {
   const cwd = process.cwd();
 
   // guard — must be run inside an existing project
@@ -15,6 +15,17 @@ export async function getInitOptions() {
   }
 
   const detectedPm = await detectPackageManager(cwd);
+
+  // --yes flag — skip all prompts, use sensible defaults
+  if (skipPrompts) {
+    return {
+      targetDir: cwd,
+      packageManager: detectedPm,
+      features: ["husky", "release-it", "prettier"],
+      huskyHooks: ["pre-commit", "commit-msg"],
+      confirmed: true,
+    };
+  }
 
   const answers = await inquirer.prompt([
     // Package manager
@@ -47,14 +58,13 @@ export async function getInitOptions() {
           value: "prettier",
           checked: true,
         },
+        {
+          name: "cn() utility  (clsx + tailwind-merge for Tailwind projects)",
+          value: "cn-util",
+          checked: false,
+        },
       ],
       validate: (input) => input.length > 0 || "Select at least one feature",
-    },
-
-    {
-      name: "cn() utility  (clsx + tailwind-merge for Tailwind projects)",
-      value: "cn-util",
-      checked: false,
     },
 
     {
