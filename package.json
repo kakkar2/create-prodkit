@@ -1,6 +1,6 @@
 {
   "name": "create-prodkit",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "CLI to add production-ready DX tooling to any project — Husky, commitlint, release-it and Prettier in one command.",
   "main": "src/cli.js",
   "bin": {

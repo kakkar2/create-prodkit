@@ -3,6 +3,13 @@
 All notable changes are documented here.
 
 
+## [2.0.3](https://github.com/kakkar2/create-prodkit/compare/v2.0.2...v2.0.3) (2026-06-27)
+
+
+### Bug Fixes
+
+* conditional lint-staged, --yes flag, skip existing cn util ([cfeedb0](https://github.com/kakkar2/create-prodkit/commit/cfeedb00d28e367ad86cea25c3e54eb1fdfa9b95))
+
 ## [2.0.2](https://github.com/kakkar2/create-prodkit/compare/v2.0.1...v2.0.2) (2026-06-26)
 
 
