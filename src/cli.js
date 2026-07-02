@@ -21,13 +21,13 @@ export async function run() {
       "Set up Husky, commitlint, release-it and Prettier in your project",
     )
     .option("-y, --yes", "skip prompts and use all defaults")
-    .action(async (options) => {
+    .action(async (cmdOptions) => {
       console.log();
       console.log(pc.bold(pc.cyan("  >> create-prodkit")));
       console.log(pc.dim("  Production-ready DX tooling for any project\n"));
 
       try {
-        const options = await getInitOptions(options.yes);
+        const options = await getInitOptions(cmdOptions.yes);
 
         if (!options.confirmed) {
           console.log(pc.dim("\n  Cancelled.\n"));
