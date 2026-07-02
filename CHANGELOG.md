@@ -3,6 +3,13 @@
 All notable changes are documented here.
 
 
+## [2.0.4](https://github.com/kakkar2/create-prodkit/compare/v2.0.3...v2.0.4) (2026-07-02)
+
+
+### Bug Fixes
+
+* resolve options naming conflict in init action ([9afcdd1](https://github.com/kakkar2/create-prodkit/commit/9afcdd1e3ec73e32ed368510c64fbd430607f9ae))
+
 ## [2.0.3](https://github.com/kakkar2/create-prodkit/compare/v2.0.2...v2.0.3) (2026-06-27)
 
 
