@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.5](https://github.com/kakkar2/create-prodkit/compare/v2.0.4...v2.0.5) (2026-07-03)
+
+### Bug Fixes
+
+* use conventionalcommits preset and correct commitlint version ([160c989](https://github.com/kakkar2/create-prodkit/commit/160c989e0d7c61e5b31fc93c44619d6448fbe287))
+
 All notable changes are documented here.
 
 
