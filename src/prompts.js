@@ -6,7 +6,6 @@ import { detectPackageManager } from "./utils/detectPackageManager.js";
 export async function getInitOptions(skipPrompts = false) {
   const cwd = process.cwd();
 
-  // guard — must be run inside an existing project
   const hasPkg = await fs.pathExists(path.join(cwd, "package.json"));
   if (!hasPkg) {
     throw new Error(
@@ -15,6 +14,15 @@ export async function getInitOptions(skipPrompts = false) {
   }
 
   const detectedPm = await detectPackageManager(cwd);
+
+  // Detect whether package manager came from a lockfile
+  const hasPnpmLock = await fs.pathExists(path.join(cwd, "pnpm-lock.yaml"));
+
+  const hasYarnLock = await fs.pathExists(path.join(cwd, "yarn.lock"));
+
+  const hasNpmLock = await fs.pathExists(path.join(cwd, "package-lock.json"));
+
+  const packageManagerDetected = hasPnpmLock || hasYarnLock || hasNpmLock;
 
   // --yes flag — skip all prompts, use sensible defaults
   if (skipPrompts) {
@@ -27,29 +35,32 @@ export async function getInitOptions(skipPrompts = false) {
     };
   }
 
-  const answers = await inquirer.prompt([
-    // Package manager
-    {
+  const questions = [];
+
+  // Only ask if we couldn't confidently detect package manager
+  if (!packageManagerDetected) {
+    questions.push({
       type: "list",
       name: "packageManager",
-      message: `Package manager: (detected: ${detectedPm})`,
+      message: "Select package manager",
       choices: ["npm", "yarn", "pnpm"],
       default: detectedPm,
-    },
+    });
+  }
 
-    // Feature selection
+  questions.push(
     {
       type: "checkbox",
       name: "features",
       message: "What do you want to set up?",
       choices: [
         {
-          name: "Husky  (git hooks)",
+          name: "Husky (git hooks)",
           value: "husky",
           checked: true,
         },
         {
-          name: "release-it  (changelog + semantic versioning)",
+          name: "release-it (changelog + semantic versioning)",
           value: "release-it",
           checked: true,
         },
@@ -59,26 +70,25 @@ export async function getInitOptions(skipPrompts = false) {
           checked: true,
         },
         {
-          name: "cn() utility  (clsx + tailwind-merge for Tailwind projects)",
+          name: "cn() utility (clsx + tailwind-merge)",
           value: "cn-util",
           checked: false,
         },
       ],
       validate: (input) => input.length > 0 || "Select at least one feature",
     },
-
     {
       type: "checkbox",
       name: "huskyHooks",
       message: "Which git hooks?",
       choices: [
         {
-          name: "pre-commit  → lint-staged (lint + format on every commit)",
+          name: "pre-commit → lint-staged",
           value: "pre-commit",
           checked: true,
         },
         {
-          name: "commit-msg  → commitlint (enforce conventional commits)",
+          name: "commit-msg → commitlint",
           value: "commit-msg",
           checked: true,
         },
@@ -86,18 +96,19 @@ export async function getInitOptions(skipPrompts = false) {
       when: (ans) => ans.features.includes("husky"),
       validate: (input) => input.length > 0 || "Select at least one hook",
     },
-
     {
       type: "confirm",
       name: "confirm",
       message: "Set up selected tools in this project?",
       default: true,
     },
-  ]);
+  );
+
+  const answers = await inquirer.prompt(questions);
 
   return {
     targetDir: cwd,
-    packageManager: answers.packageManager,
+    packageManager: answers.packageManager || detectedPm,
     features: answers.features,
     huskyHooks: answers.huskyHooks || [],
     confirmed: answers.confirm,

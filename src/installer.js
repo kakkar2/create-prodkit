@@ -25,7 +25,8 @@ export async function installFeatures(options) {
   }
 
   // Inject deps into package.json
-  await modifyPackageJson(targetDir, features, packageManager, huskyHooks);
+  // packageManager
+  await modifyPackageJson(targetDir, features, huskyHooks);
 
   // Install everything in one pass
   await runStep(

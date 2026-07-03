@@ -18,14 +18,18 @@ export async function setupReleaseIt(targetDir) {
       },
       plugins: {
         "@release-it/conventional-changelog": {
-          preset: {
-            name: "angular",
-          },
+          preset: "conventionalcommits",
           infile: "CHANGELOG.md",
           header: "# Changelog\n\nAll notable changes are documented here.\n",
         },
       },
     };
+
+    const configPath = path.join(targetDir, ".release-it.json");
+
+    if (await fs.pathExists(configPath)) {
+      return "release-it already configured";
+    }
 
     await fs.writeJson(path.join(targetDir, ".release-it.json"), config, {
       spaces: 2,
