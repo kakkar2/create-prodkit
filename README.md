@@ -87,6 +87,31 @@ Automatically detects:
 - TypeScript vs JavaScript — generates `utils.ts` or `utils.js`
 - `src/` layout vs root layout — places file in the right `lib/` folder
 
+## Writing better changelogs
+
+create-prodkit uses conventional commits to auto-generate your CHANGELOG. The more descriptive your commits, the richer your changelog entries.
+
+Conventional commits support an optional body for full context:
+
+```bash
+git commit -m "feat: add dark mode toggle
+
+Adds a theme toggle component that persists preference to localStorage.
+Supports system preference detection via prefers-color-scheme media query."
+```
+
+The body appears automatically under that entry in CHANGELOG.md when you run `npm run release`. No extra tooling needed.
+
+**Commit types that trigger version bumps:**
+
+| Type                         | What it does            | Bump    |
+| ---------------------------- | ----------------------- | ------- |
+| `feat:`                      | New feature             | minor   |
+| `fix:`                       | Bug fix                 | patch   |
+| `perf:`                      | Performance improvement | patch   |
+| `BREAKING CHANGE:`           | Breaking API change     | major   |
+| `chore:` `docs:` `refactor:` | Maintenance             | no bump |
+
 ## Requirements
 
 - Node.js 18+
